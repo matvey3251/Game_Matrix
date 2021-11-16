@@ -33,6 +33,8 @@ manager1 = pygame_gui.UIManager((W, H))
 manager2 = pygame_gui.UIManager((W, H))
 manager3 = pygame_gui.UIManager((W, H))
 manager4 = pygame_gui.UIManager((W, H))
+manager5 = pygame_gui.UIManager((W, H))
+
 
 
 accept_btn = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((852, 653), (150, 50)),
@@ -44,10 +46,10 @@ colvo = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((10, 100), (300, 5
 
 settings = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((350, 0), (300, 50)), text='НАСТРОЙКИ:', manager=manager)
 
-drop = pygame_gui.elements.UISelectionList(item_list=['1', '2', '3', '4'], relative_rect=pygame.Rect((8, 148), (154,75)),
+drop = pygame_gui.elements.UISelectionList(item_list=['2', '3', '4'], relative_rect=pygame.Rect((8, 148), (154,75)),
                                            manager = manager)
 
-drop2= pygame_gui.elements.UISelectionList(item_list=['1', '2', '3', '4'],relative_rect=pygame.Rect((158, 148),(154,75)),
+drop2= pygame_gui.elements.UISelectionList(item_list=['2', '3', '4'],relative_rect=pygame.Rect((158, 148),(154,75)),
                                             manager = manager)
 
 start_btn = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((425, 350), (150, 50)),
@@ -65,6 +67,8 @@ num = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((300, 100), (400, 
 
 
 
+
+
 yep = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((0, 0), (200, 50)),
                                   text = 'Правильных ответов:', manager=manager4)
 
@@ -74,6 +78,8 @@ noo = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((210, 0), (200, 50
 
 num = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((350, 100), (400, 50)),
                                   text = 'Выберите границы чисел в примере от и до:', manager=manager)
+
+
 
 drop3 = pygame_gui.elements.UISelectionList(item_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
                                                          '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'
@@ -200,7 +206,7 @@ fflag = False
 
 r = ['']
 n = ['']
-
+nn = ['']
 jn = False
 kjk = False
 
@@ -316,38 +322,7 @@ def ress():
     sc.blit(res, (0, 0))
     manager3.draw_ui(sc)
     pygame.display.update()
-def resss():
-    global scores, no, n, xx
 
-    xx = str(n)
-    hh = xx[4:-1]
-    trru = myfont.render(str(scores), False, Blue)
-    ffalse = myfont.render(str(no), False, Blue)
-    labble1 = myfont.render('Кол-во неправильных ответов: ', False, Blue)
-    labble = myfont.render('Кол-во правильных ответов:', False, Blue)
-    txt = myfont.render('Ошибочные примеры:', False, Blue)
-    llable = myfont.render(hh, False, Blue)
-
-    gg = labble.get_width()
-    pp = labble1.get_width()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            exit()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            button_exit.checkForInput(pygame.mouse.get_pos())
-        manager3.process_events(event)
-
-
-    sc.blit(result, (0, 0))
-    button_exit.changeColor(pygame.mouse.get_pos())
-    button_exit.update()
-    sc.blit(txt, (0, 100))
-    sc.blit(llable, (0, 140))
-    sc.blit(ffalse, (pp, 40))
-    sc.blit(labble1, (0, 40))
-    sc.blit(labble, (0, 0))
-    sc.blit(trru, (gg+7, 0))
-    pygame.display.update()
 
 def Draw_new_Pole():
     global pole, a1, a2, a3, a4,a5, a6, z, x, spisok, flag
@@ -379,7 +354,7 @@ def Draw_new_Pole():
                     a2 = int(event.text)
                     x = 0
                     if a2 < a1:
-                        a1 = 1
+                        a1 = 2
                         a2 = 2
                         err = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((10, 100), (300, 50)),
                                                           text='Число 1 должно быть меньше числа 2', manager=manager)
@@ -523,7 +498,7 @@ def miss():
 
 
 def Draw_pole():
-    global x, y, pole, x1, x2, x3, x4, x5, x6, hh, flag, fflag, no, ttv, scores, r, n, example, jn, kjk
+    global x, y, pole, x1, x2, x3, x4, x5, x6, hh, flag, fflag, no, ttv, scores, r, n, example, jn, kjk, nn
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
@@ -544,9 +519,7 @@ def Draw_pole():
             button.checkForInput(pygame.mouse.get_pos())
     fake.clear()
     for i in range(6):
-        dd = Ork(hard[i], 3)
-        ff = float(dd)
-        fake.append(solved - ff)
+        fake.append(Ork(solved + hard[i], 3))
     sc.blit(first, (0, 0))
 
     button.changeColor(pygame.mouse.get_pos())
@@ -616,6 +589,7 @@ def Draw_pole():
     if y == 185 and x == x2 - g and fflag != True:
         kjk = True
         x2 -= 10
+        n.append(example)
         miss()
     if y == 285 and x == x3 - g and fflag != True:
         kjk = True
@@ -624,7 +598,6 @@ def Draw_pole():
         miss()
     if y == 385 and x == x4 - g and fflag != True:
         kjk = True
-
         x4 -= 10
         n.append(example)
         miss()
@@ -735,8 +708,53 @@ def Draw_pole():
     pygame.draw.lines(sc, White, False, [(0, 550), (997, 550)], 5)
     pygame.display.update()
 
-randomex()
+def resss():
+    global scores, no, n, xx, nn
+    fg = len(n)
+    time_delta = clock.tick(60) / 1000.0
+    xx = str(n)
+    hh = xx[4:-1]
+    trru = myfont.render(str(scores), False, Blue)
+    ffalse = myfont.render(str(no), False, Blue)
+    labble1 = myfont.render('Кол-во неправильных ответов: ', False, Blue)
+    labble = myfont.render('Кол-во правильных ответов:', False, Blue)
+    txt = myfont.render('Ошибочные примеры:', False, Blue)
 
+    gg = labble.get_width()
+    pp = labble1.get_width()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            exit()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            button_exit.checkForInput(pygame.mouse.get_pos())
+        manager5.process_events(event)
+        for i in range(fg):
+            nn.append(n[i])
+    try:
+        num2 = pygame_gui.elements.ui_drop_down_menu.UIDropDownMenu(relative_rect=pygame.Rect((0, 140), (400, 30)),
+                                                                options_list = n, starting_option= n[1],
+                                                manager=manager5)
+    except:
+        num2 = pygame_gui.elements.ui_drop_down_menu.UIDropDownMenu(relative_rect=pygame.Rect((0, 140), (400, 30)),
+                                                                    options_list=['Все правильно, молодец!'], starting_option='Все правильно, молодец!',
+                                                                    manager=manager5)
+
+    manager.update(time_delta)
+    sc.blit(result, (0, 0))
+    button_exit.changeColor(pygame.mouse.get_pos())
+    button_exit.update()
+
+    manager5.update(time_delta)
+
+    sc.blit(txt, (0, 100))
+    sc.blit(ffalse, (pp, 40))
+    sc.blit(labble1, (0, 40))
+    sc.blit(labble, (0, 0))
+    sc.blit(trru, (gg+7, 0))
+    manager5.draw_ui(sc)
+    pygame.display.update()
+
+randomex()
 pole = 0
 while 1:
     if pole == 2:
