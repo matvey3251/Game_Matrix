@@ -34,6 +34,7 @@ manager2 = pygame_gui.UIManager((W, H))
 manager3 = pygame_gui.UIManager((W, H))
 manager4 = pygame_gui.UIManager((W, H))
 manager5 = pygame_gui.UIManager((W, H))
+manager6 = pygame_gui.UIManager((W, H))
 
 
 
@@ -69,6 +70,25 @@ num = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((300, 100), (400, 
 
 
 
+login = pygame_gui.elements.UITextEntryLine(relative_rect = pygame.Rect((343, 150), (300, 50)), manager = manager6)
+
+password = pygame_gui.elements.UITextEntryLine(relative_rect = pygame.Rect((343, 250), (300, 50)), manager = manager6)
+
+llogin = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((300, 100), (400, 50)),
+                                  text = 'Ваш логин: ', manager=manager6)
+
+ppasword = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((300, 200), (400, 50)),
+                                  text = 'Ваш пароль: ', manager=manager6)
+
+i_got_acc = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((770, 652), (250, 50)),
+                                            text='У меня уже есть аккаунт',
+                                            manager=manager6)
+
+
+
+
+
+
 yep = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((0, 0), (200, 50)),
                                   text = 'Правильных ответов:', manager=manager4)
 
@@ -78,6 +98,8 @@ noo = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((210, 0), (200, 50
 
 num = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((350, 100), (400, 50)),
                                   text = 'Выберите границы чисел в примере от и до:', manager=manager)
+
+
 
 
 
@@ -754,8 +776,33 @@ def resss():
     manager5.draw_ui(sc)
     pygame.display.update()
 
+def registration():
+    global pole, flag
+    time_delta = clock.tick(60) / 1000.0
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            exit()
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
+                if event.ui_element == password:
+                    print(password.get_text())
+
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
+                if event.ui_element == login:
+                    print(login.get_text())
+
+
+        manager6.process_events(event)
+
+    manager6.update(time_delta)
+    sc.blit(reg, (0, 0))
+    manager6.draw_ui(sc)
+    pygame.display.update()
+
+
 randomex()
-pole = 0
+pole = 5
 while 1:
     if pole == 2:
         Draw_pole()
@@ -767,5 +814,7 @@ while 1:
         ress()
     elif pole == 4:
         resss()
+    elif pole == 5:
+        registration()
 
     clock.tick(FPS)
