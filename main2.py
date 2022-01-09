@@ -80,7 +80,12 @@ llogin = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 100), (400,
 ppasword = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 200), (400, 50)),
                                        text='Пароль: ', manager=manager6)
 
-rreg = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((393, 280), (200, 50)),
+ppasword2 = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 300), (400, 50)),
+                                        text='Подтвердите пароль: ', manager=manager6)
+
+password2 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((343, 350), (300, 50)), manager=manager6)
+
+rreg = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((393, 380), (200, 50)),
                                     text='Зарегистрироваться',
                                     manager=manager6)
 
@@ -99,7 +104,7 @@ login1 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((343, 150
 password1 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((343, 250), (300, 50)), manager=manager7)
 
 enter = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((770, 652), (250, 50)),
-                                     text='Вход ',
+                                     text='Зарегистрироваться ',
                                      manager=manager7)
 
 lllogin = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((368, 280), (250, 50)),
@@ -114,6 +119,10 @@ noo = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((210, 0), (200, 50))
 
 num = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((350, 100), (400, 50)),
                                   text='Выберите границы чисел в примере от и до:', manager=manager)
+
+back = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((230, 350), (170, 50)),
+                                    text='Выйти из аккаунта',
+                                    manager=manager1)
 
 drop3 = pygame_gui.elements.UISelectionList(item_list=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
                                                        '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'
@@ -347,16 +356,17 @@ button_exit = BButton(button_surface1, 900, 676, 'exit')
 
 
 def start_pole():
-    global pole, flag
+    global pole, flag, currentaccount
     time_delta = clock.tick(60) / 1000.0
+    miss = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 100), (400, 50)),
+                                       text='Добро пожаловать, ' + str(currentaccount['login']) + '!',
+                                       manager=manager1)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
-
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == start_btn:
-                    print(currentaccount)
                     pole = 2
                     flag = 1
         if event.type == pygame.KEYDOWN:
@@ -366,6 +376,11 @@ def start_pole():
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == ll_r:
                     pole = 7
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == back:
+                    pole = 5
+                    currentaccount = None
 
         manager1.process_events(event)
 
@@ -841,7 +856,7 @@ def load_data():
 
 
 def window1():
-    global pole, flag, REG, login, f, registr, currentaccount
+    global pole, flag, login, f, registr, currentaccount
     time_delta = clock.tick(60) / 1000.0
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -853,39 +868,47 @@ def window1():
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == rreg:
-                    if os.path.isfile('data.txt'):
-                        f = open('data.txt', 'rb')
-                        list = pickle.load(f)
-                        f.close()
-                    else:
-                        list = []
-                    login_data = login.get_text()
-                    pas_data = password.get_text()
-                    check_login = True
-                    for i in list:
-                        if login_data == i['login']:
-                            check_login = False
-                    if check_login == True:
-                        registr = {
-                            'login': login_data,
-                            'password': pas_data,
-                            'latest_ri': 0,
-                            'latest_wr': 0,
-                            'err': [],
-                            'wrong': 0,
-                            'right': 0
-                        }
-                        list.append(registr)
-                        f = open("data.txt", "wb")
-                        pickle.dump(list, f)
-                        f.close()
-                        currentaccount = registr
+                    if login.get_text().rstrip() != '' and password.get_text().rstrip() != '':
+                        if password.get_text().rstrip() == password2.get_text().rstrip():
+                            if os.path.isfile('data.txt'):
+                                f = open('data.txt', 'rb')
+                                list = pickle.load(f)
+                                f.close()
+                            else:
+                                list = []
+                            login_data = login.get_text().rstrip()
+                            pas_data = password.get_text().rstrip()
+                            check_login = True
+                            for i in list:
+                                if login_data == i['login']:
+                                    check_login = False
+                            if check_login == True:
+                                registr = {
+                                    'login': login_data,
+                                    'password': pas_data,
+                                    'latest_ri': 0,
+                                    'latest_wr': 0,
+                                    'err': [],
+                                    'wrong': 0,
+                                    'right': 0
+                                }
+                                list.append(registr)
+                                f = open("data.txt", "wb")
+                                pickle.dump(list, f)
+                                f.close()
+                                currentaccount = registr
 
-                        pole = 0
-                        break
+                                pole = 0
+                                break
+                            else:
+                                miss = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 100), (400, 50)),
+                                                                   text='Такой логин уже существует', manager=manager6)
+                        else:
+                            miss = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 100), (400, 50)),
+                                                               text='Пароли не совпадают', manager=manager6)
                     else:
                         miss = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 100), (400, 50)),
-                                                           text='Такой логин уже существует', manager=manager6)
+                                                           text='Заполните все поля', manager=manager6)
         manager6.process_events(event)
     manager6.update(time_delta)
     sc.blit(reg, (0, 0))
@@ -910,7 +933,7 @@ def accoun():
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == enter:
-                    print(password1.get_text(), login1.get_text())
+                    pole = 5
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == lllogin:
