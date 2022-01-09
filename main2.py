@@ -1,6 +1,8 @@
 import pygame
 import random
 import pygame_gui
+import os
+import pickle
 
 pygame.init()
 
@@ -10,15 +12,14 @@ sc = pygame.display.set_mode((W, H), pygame.RESIZABLE)
 pygame.display.set_caption("Matrix")
 myfont = pygame.font.SysFont('cambria', 40)
 
-
-
 background = pygame.Surface((W, H))
 background1 = pygame.Surface((W, H))
 reg = pygame.Surface((W, H))
 res = pygame.Surface((W, H))
 result = pygame.Surface((W, H))
 first = pygame.Surface((W, H))
-
+account = pygame.Surface((W, H))
+last_results = pygame.Surface((W, H))
 
 background.fill(pygame.Color('#2496c1'))
 background1 = pygame.image.load('font.png')
@@ -26,7 +27,8 @@ first = pygame.image.load('Illustration3.png')
 reg.fill(pygame.Color('#30d5c8'))
 res.fill(pygame.Color('#30d5c8'))
 result.fill(pygame.Color('#30d5c8'))
-
+account.fill(pygame.Color('#30d5c8'))
+last_results.fill(pygame.Color('#30d5c8'))
 
 manager = pygame_gui.UIManager((W, H))
 manager1 = pygame_gui.UIManager((W, H))
@@ -35,139 +37,153 @@ manager3 = pygame_gui.UIManager((W, H))
 manager4 = pygame_gui.UIManager((W, H))
 manager5 = pygame_gui.UIManager((W, H))
 manager6 = pygame_gui.UIManager((W, H))
-
-
+manager7 = pygame_gui.UIManager((W, H))
+manager8 = pygame_gui.UIManager((W, H))
 
 accept_btn = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((852, 653), (150, 50)),
-                                            text='Принять',
-                                            manager=manager)
+                                          text='Принять',
+                                          manager=manager)
 
-colvo = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((10, 100), (300, 50)), text='Выберите кол-во чисел от и до:',
+colvo = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((10, 100), (300, 50)),
+                                    text='Выберите кол-во чисел от и до:',
                                     manager=manager)
 
-settings = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((350, 0), (300, 50)), text='НАСТРОЙКИ:', manager=manager)
+settings = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((350, 0), (300, 50)), text='НАСТРОЙКИ:',
+                                       manager=manager)
 
-drop = pygame_gui.elements.UISelectionList(item_list=['2', '3', '4'], relative_rect=pygame.Rect((8, 148), (154,75)),
-                                           manager = manager)
+drop = pygame_gui.elements.UISelectionList(item_list=['2', '3', '4'], relative_rect=pygame.Rect((8, 148), (154, 75)),
+                                           manager=manager)
 
-drop2= pygame_gui.elements.UISelectionList(item_list=['2', '3', '4'],relative_rect=pygame.Rect((158, 148),(154,75)),
-                                            manager = manager)
+drop2 = pygame_gui.elements.UISelectionList(item_list=['2', '3', '4'], relative_rect=pygame.Rect((158, 148), (154, 75)),
+                                            manager=manager)
 
 start_btn = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((425, 350), (150, 50)),
-                                            text='НАЧАТЬ',
-                                            manager=manager1)
+                                         text='НАЧАТЬ',
+                                         manager=manager1)
 
 yes_btn = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((500, 350), (150, 50)),
-                                            text='Да',
-                                            manager=manager3)
+                                       text='Да',
+                                       manager=manager3)
 no_btn = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 350), (150, 50)),
-                                            text='Нет',
-                                            manager=manager3)
-num = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((300, 100), (400, 50)),
-                                  text = 'Хотите посмотреть результаты?', manager=manager3)
+                                      text='Нет',
+                                      manager=manager3)
+num = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 100), (400, 50)),
+                                  text='Хотите посмотреть результаты?', manager=manager3)
 
+login = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((343, 150), (300, 50)), manager=manager6)
 
+password = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((343, 250), (300, 50)), manager=manager6)
 
+llogin = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 100), (400, 50)),
+                                     text='Логин: ', manager=manager6)
 
+ppasword = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 200), (400, 50)),
+                                       text='Пароль: ', manager=manager6)
 
-login = pygame_gui.elements.UITextEntryLine(relative_rect = pygame.Rect((343, 150), (300, 50)), manager = manager6)
-
-password = pygame_gui.elements.UITextEntryLine(relative_rect = pygame.Rect((343, 250), (300, 50)), manager = manager6)
-
-llogin = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((300, 100), (400, 50)),
-                                  text = 'Ваш логин: ', manager=manager6)
-
-ppasword = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((300, 200), (400, 50)),
-                                  text = 'Ваш пароль: ', manager=manager6)
+rreg = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((393, 280), (200, 50)),
+                                    text='Зарегистрироваться',
+                                    manager=manager6)
 
 i_got_acc = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((770, 652), (250, 50)),
-                                            text='У меня уже есть аккаунт',
-                                            manager=manager6)
+                                         text='У меня уже есть аккаунт',
+                                         manager=manager6)
 
+llogin1 = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 100), (400, 50)),
+                                      text='Ваш логин: ', manager=manager7)
 
+ppasword1 = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 200), (400, 50)),
+                                        text='Ваш пароль: ', manager=manager7)
 
+login1 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((343, 150), (300, 50)), manager=manager7)
 
+password1 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((343, 250), (300, 50)), manager=manager7)
 
+enter = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((770, 652), (250, 50)),
+                                     text='Вход ',
+                                     manager=manager7)
 
-yep = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((0, 0), (200, 50)),
-                                  text = 'Правильных ответов:', manager=manager4)
+lllogin = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((368, 280), (250, 50)),
+                                       text='Войти',
+                                       manager=manager7)
 
-noo = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((210, 0), (200, 50)),
-                                  text = 'Неправильных ответов:', manager=manager4)
+yep = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((0, 0), (200, 50)),
+                                  text='Правильных ответов:', manager=manager4)
 
+noo = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((210, 0), (200, 50)),
+                                  text='Неправильных ответов:', manager=manager4)
 
-num = pygame_gui.elements.UILabel(relative_rect = pygame.Rect((350, 100), (400, 50)),
-                                  text = 'Выберите границы чисел в примере от и до:', manager=manager)
+num = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((350, 100), (400, 50)),
+                                  text='Выберите границы чисел в примере от и до:', manager=manager)
 
+drop3 = pygame_gui.elements.UISelectionList(item_list=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
+                                                       '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'
+    , '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42',
+                                                       '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53'
+    , '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72',
+                                                       '73', '74', '75', '76', '77', '78', '79', '80', '81', '82',
+                                                       '83', '84', '85', '86', '87', '88', '89', '90', '91', '92',
+                                                       '93', '94', '95', '96', '97', '98', '99', '100'],
+                                            relative_rect=pygame.Rect((348, 148), (204, 75)), manager=manager, )
 
+drop4 = pygame_gui.elements.UISelectionList(item_list=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
+                                                       '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'
+    , '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42',
+                                                       '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53'
+    , '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72',
+                                                       '73', '74', '75', '76', '77', '78', '79', '80', '81', '82',
+                                                       '83', '84', '85', '86', '87', '88', '89', '90', '91', '92',
+                                                       '93', '94', '95', '96', '97', '98', '99', '100'],
+                                            relative_rect=pygame.Rect((548, 148), (204, 75)), manager=manager, )
 
+drop5 = pygame_gui.elements.UISelectionList(item_list=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
+                                                       '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'
+    , '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42',
+                                                       '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53'
+    , '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72',
+                                                       '73', '74', '75', '76', '77', '78', '79', '80', '81', '82',
+                                                       '83', '84', '85', '86', '87', '88', '89', '90', '91', '92',
+                                                       '93', '94', '95', '96', '97', '98', '99', '100'],
+                                            relative_rect=pygame.Rect((348, 219), (204, 75)), manager=manager, )
 
-
-drop3 = pygame_gui.elements.UISelectionList(item_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
-                                                         '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'
-    ,'24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42',
-                                                         '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53'
-    ,'54', '55', '56','57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67','68', '69', '70', '71', '72',
-                                                         '73', '74', '75', '76', '77', '78', '79', '80', '81', '82',
-                                                         '83', '84', '85', '86', '87', '88', '89', '90', '91', '92',
-                                                         '93', '94', '95', '96', '97', '98', '99', '100'],
-                                            relative_rect  = pygame.Rect((348, 148), (204, 75)), manager = manager, )
-
-
-drop4 = pygame_gui.elements.UISelectionList(item_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
-                                                         '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'
-    ,'24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42',
-                                                         '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53'
-    ,'54', '55', '56','57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67','68', '69', '70', '71', '72',
-                                                         '73', '74', '75', '76', '77', '78', '79', '80', '81', '82',
-                                                         '83', '84', '85', '86', '87', '88', '89', '90', '91', '92',
-                                                         '93', '94', '95', '96', '97', '98', '99', '100'],
-                                            relative_rect = pygame.Rect((548, 148), (204, 75)), manager = manager, )
-
-drop5 = pygame_gui.elements.UISelectionList(item_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
-                                                         '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'
-    ,'24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42',
-                                                         '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53'
-    ,'54', '55', '56','57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67','68', '69', '70', '71', '72',
-                                                         '73', '74', '75', '76', '77', '78', '79', '80', '81', '82',
-                                                         '83', '84', '85', '86', '87', '88', '89', '90', '91', '92',
-                                                         '93', '94', '95', '96', '97', '98', '99', '100'],
-                                            relative_rect  = pygame.Rect((348, 219), (204, 75)), manager = manager, )
-
-
-drop6 = pygame_gui.elements.UISelectionList(item_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
-                                                         '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'
-    ,'24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42',
-                                                         '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53'
-    ,'54', '55', '56','57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67','68', '69', '70', '71', '72',
-                                                         '73', '74', '75', '76', '77', '78', '79', '80', '81', '82',
-                                                         '83', '84', '85', '86', '87', '88', '89', '90', '91', '92',
-                                                         '93', '94', '95', '96', '97', '98', '99', '100'],
-                                            relative_rect  = pygame.Rect((548, 219), (204, 75)), manager = manager, )
-
+drop6 = pygame_gui.elements.UISelectionList(item_list=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
+                                                       '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'
+    , '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42',
+                                                       '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53'
+    , '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72',
+                                                       '73', '74', '75', '76', '77', '78', '79', '80', '81', '82',
+                                                       '83', '84', '85', '86', '87', '88', '89', '90', '91', '92',
+                                                       '93', '94', '95', '96', '97', '98', '99', '100'],
+                                            relative_rect=pygame.Rect((548, 219), (204, 75)), manager=manager, )
 
 div_btn = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 350), (150, 50)),
-                                            text='Деление',
-                                            manager=manager)
+                                       text='Деление',
+                                       manager=manager)
 
 um_btn = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((150, 350), (150, 50)),
-                                            text='Умножение',
-                                            manager=manager)
+                                      text='Умножение',
+                                      manager=manager)
 
 plus_btn = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((300, 350), (150, 50)),
-                                            text='Плюс',
-                                            manager=manager)
+                                        text='Плюс',
+                                        manager=manager)
 
 minus_btn = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((450, 350), (150, 50)),
-                                            text='Минус',
-                                            manager=manager)
+                                         text='Минус',
+                                         manager=manager)
 
 randm_btn = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((600, 350), (150, 50)),
-                                            text='Перемешка',
-                                            manager=manager)
+                                         text='Перемешка',
+                                         manager=manager)
+
+b_x = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((600, 350), (150, 50)),
+                                   text='Выйти',
+                                   manager=manager)
+
+ll_r = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((600, 350), (200, 50)),
+                                    text='Предыдущие результаты',
+                                    manager=manager1)
 
 speed = 20
-
 
 White = (225, 225, 225)
 MCLR = (150, 180, 255)
@@ -178,7 +194,6 @@ Mint = (15, 254, 173)
 YG = (177, 251, 31)
 Black = (255, 255, 255)
 green = (0, 255, 0)
-
 
 scores = 0
 no = 0
@@ -199,12 +214,9 @@ x4 = 800
 x5 = 800
 x6 = 800
 
-
 spisok = ['/', '*', '+', '-']
 
 gh = [x1, x2, x3, x4, x5, x6]
-
-
 
 surf = pygame.Surface((200, 200))
 surf.fill(Red)
@@ -232,6 +244,8 @@ nn = ['']
 jn = False
 kjk = False
 
+
+####################################################REGISTRATION########################################################
 class Button():
     def __init__(self, image, x_pos, y_pos, text_input):
         self.image = image
@@ -247,11 +261,34 @@ class Button():
         sc.blit(self.text, self.text_rect)
 
     def checkForInput(self, position):
-        global pole
+        global pole, lt_ri, lt_wr, ri, wr, er, data, lg, pas
         if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top,
                                                                                           self.rect.bottom):
-            pole = 3
+            f = open('data.txt', 'rb')
+            data = pickle.load(f)
+            f.close()
+            lg = data[currentaccount]['login']
+            pas = data[currentaccount]['password']
+            lt_ri = data[currentaccount]['latest_ri']
+            lt_wr = data[currentaccount]['latest_wr']
+            er = data[currentaccount]['err']
+            wr = data[currentaccount]['wrong']
+            ri = data[currentaccount]['right']
 
+            lt_ri += scores
+            lt_wr += no
+            ri = scores
+            wr = no
+            er.append(n)
+            data[currentaccount]['latest_ri'] = lt_ri
+            data[currentaccount]['latest_wr'] = lt_wr
+            data[currentaccount]['err'] = er
+            data[currentaccount]['wrong'] = wr
+            data[currentaccount]['right'] = ri
+            f = open('data.txt', 'wb')
+            pickle.dump(data, f)
+            f.close()
+            pole = 3
 
     def changeColor(self, position):
         if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top,
@@ -281,7 +318,6 @@ class BButton():
                                                                                           self.rect.bottom):
             exit()
 
-
     def changeColor(self, position):
         if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top,
                                                                                           self.rect.bottom):
@@ -299,6 +335,7 @@ button_surface1 = pygame.transform.scale(button_surface, (200, 47))
 button = Button(button_surface, 900, 676, 'exit')
 button_exit = BButton(button_surface1, 900, 676, 'exit')
 
+
 def start_pole():
     global pole, flag
     time_delta = clock.tick(60) / 1000.0
@@ -314,7 +351,10 @@ def start_pole():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKSPACE and pygame.key.get_mods() & pygame.KMOD_LCTRL:
                 pole = 1
-
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == ll_r:
+                    pole = 7
 
         manager1.process_events(event)
 
@@ -322,6 +362,7 @@ def start_pole():
     sc.blit(background1, (0, 0))
     manager1.draw_ui(sc)
     pygame.display.update()
+
 
 def ress():
     global pole, n
@@ -338,7 +379,6 @@ def ress():
                 if event.ui_element == no_btn:
                     exit()
 
-
         manager3.process_events(event)
     manager3.update(time_delta)
     sc.blit(res, (0, 0))
@@ -347,7 +387,7 @@ def ress():
 
 
 def Draw_new_Pole():
-    global pole, a1, a2, a3, a4,a5, a6, z, x, spisok, flag
+    global pole, a1, a2, a3, a4, a5, a6, z, x, spisok, flag
     time_delta = clock.tick(60) / 1000.0
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -368,7 +408,8 @@ def Draw_new_Pole():
                     if a2 < a1:
                         a1 = 1
                         a2 = 2
-                        err = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((10, 100), (300, 50)), text='Число 1 должно быть меньше числа 2', manager=manager)
+                        err = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((10, 100), (300, 50)),
+                                                          text='Число 1 должно быть меньше числа 2', manager=manager)
                     randomex()
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_SELECTION_LIST_NEW_SELECTION:
@@ -481,8 +522,6 @@ def Draw_new_Pole():
                     x = 0
                     randomex()
 
-
-
         manager.process_events(event)
     manager.update(time_delta)
     sc.blit(background, (0, 0))
@@ -492,6 +531,7 @@ def Draw_new_Pole():
 
 def Ork(numObj, digits=0):
     return float(f"{numObj:.{digits}f}")
+
 
 def randomex():
     global example, solved, a1
@@ -511,12 +551,15 @@ def randomex():
         except:
             pass
 
+
 def score():
     global scores
     scores += 1
+
+
 def miss():
-    global  no
-    no+=1
+    global no
+    no += 1
 
 
 def Draw_pole():
@@ -563,11 +606,11 @@ def Draw_pole():
     ex4 = example4.get_width()
     ex5 = example5.get_width()
 
-    u1 = 900 - ex1/2
-    u2 = 900 - ex2/2
-    u3 = 900 - ex3/2
-    u4 = 900 - ex4/2
-    u5 = 900 - ex5/2
+    u1 = 900 - ex1 / 2
+    u2 = 900 - ex2 / 2
+    u3 = 900 - ex3 / 2
+    u4 = 900 - ex4 / 2
+    u5 = 900 - ex5 / 2
 
     if x == x1 - g and y == yu[2]:
         fflag = True
@@ -581,7 +624,6 @@ def Draw_pole():
         fflag = True
     if x == x6 - g and y == yu[2]:
         fflag = True
-
 
     if y == 85 and x == x1 - g and fflag == True:
         score()
@@ -600,8 +642,6 @@ def Draw_pole():
 
     if y == 585 and x == x6 - g and fflag == True:
         score()
-
-
 
     if y == 85 and x == x1 - g and fflag != True:
         x1 -= 10
@@ -682,9 +722,8 @@ def Draw_pole():
         random.shuffle(yu)
         randomex()
 
-
-
     keys = pygame.key.get_pressed()
+
     x += 1
     if x < x1 - 50 - g and y == 85:
         if keys[pygame.K_SPACE]:
@@ -707,19 +746,18 @@ def Draw_pole():
 
     if kjk == True:
         if n[0] != '':
-           jn = True
+            jn = True
         if jn == True:
             n.pop(0)
             kjk = False
 
-
     sc.blit(textsurface, (x, y))
     sc.blit(textsurface2, (900 - f / 2, yu[2]))
-    sc.blit(example1, (900 - ex1/2, yu[1]))
-    sc.blit(example2, (900 - ex2/2, yu[3]))
-    sc.blit(example3, (900 - ex3/2, yu[4]))
-    sc.blit(example4, (900 - ex4/2, yu[5]))
-    sc.blit(example5, (900 - ex5/2, yu[0]))
+    sc.blit(example1, (900 - ex1 / 2, yu[1]))
+    sc.blit(example2, (900 - ex2 / 2, yu[3]))
+    sc.blit(example3, (900 - ex3 / 2, yu[4]))
+    sc.blit(example4, (900 - ex4 / 2, yu[5]))
+    sc.blit(example5, (900 - ex5 / 2, yu[0]))
 
     # отрисовка поля
     pygame.draw.lines(sc, White, False, [(0, 50), (997, 50), (997, 650), (0, 650)], 5)
@@ -729,6 +767,7 @@ def Draw_pole():
     pygame.draw.lines(sc, White, False, [(0, 450), (997, 450)], 5)
     pygame.draw.lines(sc, White, False, [(0, 550), (997, 550)], 5)
     pygame.display.update()
+
 
 def resss():
     global scores, no, n, xx, nn
@@ -754,51 +793,184 @@ def resss():
             nn.append(n[i])
     try:
         num2 = pygame_gui.elements.ui_drop_down_menu.UIDropDownMenu(relative_rect=pygame.Rect((0, 140), (400, 30)),
-                                                                options_list = n, starting_option= n[1],
-                                                manager=manager5)
+                                                                    options_list=n, starting_option=n[1],
+                                                                    manager=manager5)
     except:
         num2 = pygame_gui.elements.ui_drop_down_menu.UIDropDownMenu(relative_rect=pygame.Rect((0, 140), (400, 30)),
-                                                                    options_list=['Все правильно, молодец!'], starting_option='Все правильно, молодец!',
+                                                                    options_list=['Все правильно, молодец!'],
+                                                                    starting_option='Все правильно, молодец!',
                                                                     manager=manager5)
 
     manager.update(time_delta)
     sc.blit(result, (0, 0))
     button_exit.changeColor(pygame.mouse.get_pos())
     button_exit.update()
-
     manager5.update(time_delta)
-
     sc.blit(txt, (0, 100))
     sc.blit(ffalse, (pp, 40))
     sc.blit(labble1, (0, 40))
     sc.blit(labble, (0, 0))
-    sc.blit(trru, (gg+7, 0))
+    sc.blit(trru, (gg + 7, 0))
     manager5.draw_ui(sc)
     pygame.display.update()
 
-def registration():
-    global pole, flag
+
+def load_data():
+    global data, lg, pas, lt_ri, er, wr, ri, lt_wr
+    f = open('data.txt', 'rb')
+    data = pickle.load(f)
+    f.close()
+    lg = data['login']
+    pas = data['password']
+    lt_ri = data['latest_ri']
+    lt_wr = data['latest_wr']
+    er = data['err']
+    wr = data['wrong']
+    ri = data['right']
+
+
+currentaccount = None
+
+
+def window1():
+    global pole, flag, REG, login, f, registr, currentaccount
     time_delta = clock.tick(60) / 1000.0
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
         if event.type == pygame.USEREVENT:
-            if event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
-                if event.ui_element == password:
-                    print(password.get_text())
-
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == i_got_acc:
+                    pole = 6
         if event.type == pygame.USEREVENT:
-            if event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
-                if event.ui_element == login:
-                    print(login.get_text())
-
-
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == rreg:
+                    if os.path.isfile('data.txt'):
+                        f = open('data.txt', 'rb')
+                        list = pickle.load(f)
+                        f.close()
+                    else:
+                        list = []
+                    login_data = login.get_text()
+                    pas_data = password.get_text()
+                    check_login = True
+                    for i in list:
+                        if login_data == i['login']:
+                            check_login = False
+                    if check_login == True:
+                        registr = {
+                            'login': login_data,
+                            'password': pas_data,
+                            'latest_ri': 0,
+                            'latest_wr': 0,
+                            'err': [],
+                            'wrong': 0,
+                            'right': 0
+                        }
+                        list.append(registr)
+                        f = open("data.txt", "wb")
+                        pickle.dump(list, f)
+                        f.close()
+                        pole = 0
+                        break
+                    else:
+                        miss = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((350, 100), (400, 50)),
+                                                           text='Такой логин уже существует', manager=manager6)
         manager6.process_events(event)
-
     manager6.update(time_delta)
     sc.blit(reg, (0, 0))
     manager6.draw_ui(sc)
     pygame.display.update()
+
+    def save_data():
+        login_data = login.get_text()
+        pas_data = password.get_text()
+        registr = {'login': login_data, 'password': pas_data, 'latest': None, 'err': [], 'wrong': None, 'right': None}
+        f = open("data.txt", "wb")
+        pickle.dump(registr, f)
+        f.close()
+
+
+def accoun():
+    global pole, flag, registr, currentaccount, lg, pas, lt_ri, lt_wr, er, wr, ri
+    time_delta = clock.tick(60) / 1000.0
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            exit()
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == enter:
+                    print(password1.get_text(), login1.get_text())
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == lllogin:
+                    f = open('data.txt', 'rb')
+                    data = pickle.load(f)
+                    f.close()
+                    check_acc = False
+                    for i in data:
+                        if login1.get_text() == i['login']:
+                            check_acc = True
+                            if password1.get_text() == i['password']:
+                                congr = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((350, 100), (400, 50)),
+                                                                    text='Вы вошли в аккаунт', manager=manager7)
+                                lg = i['login']
+                                pas = i['password']
+                                lt_ri = i['latest_ri']
+                                lt_wr = i['latest_wr']
+                                er = i['err']
+                                wr = i['wrong']
+                                ri = i['right']
+                                currentaccount = i
+                                pole = 0
+                            else:
+                                pas_f = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((350, 100), (400, 50)),
+                                                                    text='Неправильный пароль', manager=manager7)
+                    if check_acc == False:
+                        log_f = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((350, 100), (400, 50)),
+                                                            text='Такой логин уже существует', manager=manager7)
+
+        manager7.process_events(event)
+    manager7.update(time_delta)
+    sc.blit(account, (0, 0))
+    manager7.draw_ui(sc)
+    pygame.display.update()
+
+
+def l_r():
+    global pole, flag, registr, currentaccount, lg, pas, data, lg, pas, lt_ri, er, wr, ri, lt_wr
+    time_delta = clock.tick(60) / 1000.0
+    f = open('data.txt', 'rb')
+    ddt = pickle.load(f)
+    f.close()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            exit()
+        manager8.process_events(event)
+    labble1 = myfont.render('Кол-во неправильных ответов: ', False, Blue)
+    labble = myfont.render('Кол-во правильных ответов:', False, Blue)
+    trru = myfont.render(str(scores), False, Blue)
+    ffalse = myfont.render(str(no), False, Blue)
+    manager8.update(time_delta)
+    sc.blit(last_results, (0, 0))
+    manager8.draw_ui(sc)
+    r = ddt[currentaccount]['login']
+    sc.blit(r, (0, 100))
+    sc.blit(labble1, (0, 40))
+    sc.blit(labble, (0, 0))
+    pygame.display.update()
+
+
+''' последний результаты
+    логин 
+    пароль 
+    список непр. примеров и ответов
+    общая статистика'''
+
+
+########REG#############
+def log_in():
+    pass
 
 
 randomex()
@@ -815,6 +987,10 @@ while 1:
     elif pole == 4:
         resss()
     elif pole == 5:
-        registration()
+        window1()
+    elif pole == 6:
+        accoun()
+    elif pole == 7:
+        l_r()
 
     clock.tick(FPS)
