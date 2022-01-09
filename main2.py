@@ -244,6 +244,8 @@ nn = ['']
 jn = False
 kjk = False
 
+currentaccount = None
+
 
 ####################################################REGISTRATION########################################################
 class Button():
@@ -261,30 +263,37 @@ class Button():
         sc.blit(self.text, self.text_rect)
 
     def checkForInput(self, position):
-        global pole, lt_ri, lt_wr, ri, wr, er, data, lg, pas
+        global pole, lt_ri, lt_wr, ri, wr, er, data, currentaccount
         if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top,
                                                                                           self.rect.bottom):
             f = open('data.txt', 'rb')
             data = pickle.load(f)
             f.close()
-            lg = data[currentaccount]['login']
-            pas = data[currentaccount]['password']
-            lt_ri = data[currentaccount]['latest_ri']
-            lt_wr = data[currentaccount]['latest_wr']
-            er = data[currentaccount]['err']
-            wr = data[currentaccount]['wrong']
-            ri = data[currentaccount]['right']
+
+            data.remove(currentaccount)
+
+            lg = currentaccount['login']
+            pas = currentaccount['password']
+            lt_ri = currentaccount['latest_ri']
+            lt_wr = currentaccount['latest_wr']
+            er = currentaccount['err']
+            wr = currentaccount['wrong']
+            ri = currentaccount['right']
 
             lt_ri += scores
             lt_wr += no
             ri = scores
             wr = no
             er.append(n)
-            data[currentaccount]['latest_ri'] = lt_ri
-            data[currentaccount]['latest_wr'] = lt_wr
-            data[currentaccount]['err'] = er
-            data[currentaccount]['wrong'] = wr
-            data[currentaccount]['right'] = ri
+
+            currentaccount['latest_ri'] = lt_ri
+            currentaccount['latest_wr'] = lt_wr
+            currentaccount['err'] = er
+            currentaccount['wrong'] = wr
+            currentaccount['right'] = ri
+
+            data.append(currentaccount)
+
             f = open('data.txt', 'wb')
             pickle.dump(data, f)
             f.close()
@@ -313,10 +322,11 @@ class BButton():
         sc.blit(self.text, self.text_rect)
 
     def checkForInput(self, position):
-        global pole
+        global pole, currentaccount
         if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top,
                                                                                           self.rect.bottom):
-            exit()
+            pole = 5
+            currentaccount = None
 
     def changeColor(self, position):
         if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top,
@@ -346,6 +356,7 @@ def start_pole():
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == start_btn:
+                    print(currentaccount)
                     pole = 2
                     flag = 1
         if event.type == pygame.KEYDOWN:
@@ -829,9 +840,6 @@ def load_data():
     ri = data['right']
 
 
-currentaccount = None
-
-
 def window1():
     global pole, flag, REG, login, f, registr, currentaccount
     time_delta = clock.tick(60) / 1000.0
@@ -871,10 +879,12 @@ def window1():
                         f = open("data.txt", "wb")
                         pickle.dump(list, f)
                         f.close()
+                        currentaccount = registr
+
                         pole = 0
                         break
                     else:
-                        miss = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((350, 100), (400, 50)),
+                        miss = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 100), (400, 50)),
                                                            text='Такой логин уже существует', manager=manager6)
         manager6.process_events(event)
     manager6.update(time_delta)
@@ -912,8 +922,6 @@ def accoun():
                         if login1.get_text() == i['login']:
                             check_acc = True
                             if password1.get_text() == i['password']:
-                                congr = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((350, 100), (400, 50)),
-                                                                    text='Вы вошли в аккаунт', manager=manager7)
                                 lg = i['login']
                                 pas = i['password']
                                 lt_ri = i['latest_ri']
@@ -922,13 +930,14 @@ def accoun():
                                 wr = i['wrong']
                                 ri = i['right']
                                 currentaccount = i
+
                                 pole = 0
                             else:
-                                pas_f = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((350, 100), (400, 50)),
-                                                                    text='Неправильный пароль', manager=manager7)
+                                miss = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 100), (400, 50)),
+                                                                   text='Неправильный пароль', manager=manager7)
                     if check_acc == False:
-                        log_f = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((350, 100), (400, 50)),
-                                                            text='Такой логин уже существует', manager=manager7)
+                        miss = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 100), (400, 50)),
+                                                           text='Неправильный логин', manager=manager7)
 
         manager7.process_events(event)
     manager7.update(time_delta)
@@ -940,24 +949,20 @@ def accoun():
 def l_r():
     global pole, flag, registr, currentaccount, lg, pas, data, lg, pas, lt_ri, er, wr, ri, lt_wr
     time_delta = clock.tick(60) / 1000.0
-    f = open('data.txt', 'rb')
-    ddt = pickle.load(f)
-    f.close()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
         manager8.process_events(event)
     labble1 = myfont.render('Кол-во неправильных ответов: ', False, Blue)
     labble = myfont.render('Кол-во правильных ответов:', False, Blue)
-    trru = myfont.render(str(scores), False, Blue)
+    trru = myfont.render(str(currentaccount['latest_wr']), False, Blue)
     ffalse = myfont.render(str(no), False, Blue)
     manager8.update(time_delta)
     sc.blit(last_results, (0, 0))
     manager8.draw_ui(sc)
-    r = ddt[currentaccount]['login']
-    sc.blit(r, (0, 100))
     sc.blit(labble1, (0, 40))
     sc.blit(labble, (0, 0))
+    sc.blit(trru, (10, 0))
     pygame.display.update()
 
 
