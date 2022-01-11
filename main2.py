@@ -23,6 +23,7 @@ last_results = pygame.Surface((W, H))
 teacher_window = pygame.Surface((W, H))
 reg_teacher = pygame.Surface((W, H))
 log_teacher = pygame.Surface((W, H))
+res_ch = pygame.Surface((W, H))
 
 background.fill(pygame.Color('#2496c1'))
 background1 = pygame.image.load('font.png')
@@ -35,6 +36,7 @@ last_results.fill(pygame.Color('#30d5c8'))
 teacher_window.fill(pygame.Color('#30d5c3'))
 reg_teacher.fill(pygame.Color('#30d5c3'))
 log_teacher.fill(pygame.Color('#30d5c3'))
+res_ch.fill(pygame.Color('#30d5c3'))
 
 manager = pygame_gui.UIManager((W, H))
 manager1 = pygame_gui.UIManager((W, H))
@@ -48,6 +50,7 @@ manager8 = pygame_gui.UIManager((W, H))
 manager9 = pygame_gui.UIManager((W, H))
 manager10 = pygame_gui.UIManager((W, H))
 manager11 = pygame_gui.UIManager((W, H))
+manager12 = pygame_gui.UIManager((W, H))
 
 accept_btn = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((852, 653), (150, 50)),
                                           text='Принять',
@@ -140,10 +143,6 @@ back = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((230, 350), (170, 
 bback = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((770, 652), (250, 50)),
                                      text='Назад',
                                      manager=manager8)
-
-bbback = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((770, 652), (250, 50)),
-                                      text='Назад',
-                                      manager=manager9)
 
 drop3 = pygame_gui.elements.UISelectionList(item_list=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
                                                        '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'
@@ -263,8 +262,27 @@ password7 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((343, 
                                                 manager=manager11)
 
 ##############################################################################################
-##############################Вывод результатов для препа#####################################
+##############################Вывод результатов для препа (ВВОД)#####################################
 
+gh = pygame_gui.elements.UILabel(relative_rect=pygame.Rect(((W - 400) / 2, 100), (400, 50)),
+                                 text='Введите логин ученика:', manager=manager9)
+
+ch_login = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect(((W - 300) / 2, 150), (300, 50)),
+                                               manager=manager9)
+
+ch_but = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(((W - 200) / 2, 180), (200, 50)),
+                                      text='Посмотреть статистику',
+                                      manager=manager9)
+
+bbback = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((770, 652), (250, 50)),
+                                      text='Назад',
+                                      manager=manager9)
+
+##############################Вывод результатов ученика для препа (ИТОГ)#####################################
+
+back_ch = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((770, 652), (250, 50)),
+                                       text='Назад',
+                                       manager=manager12)
 
 speed = 20
 
@@ -934,20 +952,7 @@ def resss():
     pygame.display.update()
 
 
-def load_data():
-    global data, lg, pas, lt_ri, er, wr, ri, lt_wr
-    f = open('data.txt', 'rb')
-    data = pickle.load(f)
-    f.close()
-    lg = data['login']
-    pas = data['password']
-    lt_ri = data['latest_ri']
-    lt_wr = data['latest_wr']
-    er = data['err']
-    wr = data['wrong']
-    ri = data['right']
-
-
+######################################REG#####################################################
 def tch():
     global pole
     time_delta = clock.tick(60) / 1000.0
@@ -1144,6 +1149,9 @@ def accoun():
     pygame.display.update()
 
 
+######################################END_REG#####################################################
+
+
 def l_r():
     global pole, flag, registr, currentaccount, lg, pas, data, lg, pas, lt_ri, er, wr, ri, lt_wr
     time_delta = clock.tick(60) / 1000.0
@@ -1159,11 +1167,7 @@ def l_r():
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == bback:
                     pole = 0
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKSPACE and pygame.key.get_mods() & pygame.KMOD_LCTRL:
-                pole = 8
         manager8.process_events(event)
-
     try:
         num2 = pygame_gui.elements.ui_drop_down_menu.UIDropDownMenu(relative_rect=pygame.Rect((0, 180), (400, 30)),
                                                                     options_list=mass, starting_option=mass[1],
@@ -1196,8 +1200,12 @@ def l_r():
 
 
 def teacher_w():
-    global pole, flag, registr, currentaccount, lg, pas, data, lg, pas, lt_ri, er, wr, ri, lt_wr
+    global pole
     time_delta = clock.tick(60) / 1000.0
+    f = open('tch.txt', 'rb')
+    data_tch = pickle.load(f)
+    f.close()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
@@ -1205,16 +1213,36 @@ def teacher_w():
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == bbback:
                     pole = 5
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == ch_but:
+                    pole = 11
+
         manager9.process_events(event)
+    miss = pygame_gui.elements.UILabel(relative_rect=pygame.Rect(((W - 400) / 2, 0), (400, 50)),
+                                       text='Добро пожаловать, ' + str(data_tch['login']) + '!',
+                                       manager=manager9)
     sc.blit(teacher_window, (0, 0))
     manager9.update(time_delta)
     manager9.draw_ui(sc)
     pygame.display.update()
 
 
-########REG#############
-def log_in():
-    pass
+def ch_result():
+    global pole
+    time_delta = clock.tick(60) / 1000.0
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            exit()
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == back_ch:
+                    pole = 8
+        manager12.process_events(event)
+    sc.blit(teacher_window, (0, 0))
+    manager12.update(time_delta)
+    manager12.draw_ui(sc)
+    pygame.display.update()
 
 
 randomex()
@@ -1242,6 +1270,8 @@ while 1:
         tch()
     elif pole == 10:
         tch_log()
+    elif pole == 11:
+        ch_result()
 
     clock.tick(FPS)
 
