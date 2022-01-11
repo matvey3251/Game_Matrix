@@ -494,7 +494,6 @@ def start_pole():
                     currentaccount = None
 
         manager1.process_events(event)
-
     manager1.update(time_delta)
     sc.blit(background1, (0, 0))
     manager1.draw_ui(sc)
@@ -969,11 +968,17 @@ def tch():
                     login = login3.get_text()
                     password = password3.get_text()
                     f = open('tch.txt', 'rb')
-                    data_tch = pickle.load(f)
+                    data_tch1 = pickle.load(f)
                     f.close()
-                    if login == data_tch['login']:
-                        if password == data_tch['password']:
+                    if login == data_tch1['login']:
+                        if password == data_tch1['password']:
                             pole = 8
+                        else:
+                            miss = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 55), (400, 40)),
+                                                               text='Не верный пароль', manager=manager10)
+                    else:
+                        miss = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 55), (400, 40)),
+                                                           text='Не верный логин', manager=manager10)
 
         manager10.process_events(event)
     manager10.update(time_delta)
@@ -1200,12 +1205,18 @@ def l_r():
 
 
 def teacher_w():
-    global pole
+    global pole, cur_ch, masss
     time_delta = clock.tick(60) / 1000.0
     f = open('tch.txt', 'rb')
     data_tch = pickle.load(f)
     f.close()
-
+    f = open('data.txt', 'rb')
+    data_t = pickle.load(f)
+    f.close()
+    masss = []
+    for i in data_t:
+        if ch_login.get_text() == i['login']:
+            cur_ch = i
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
@@ -1229,8 +1240,12 @@ def teacher_w():
 
 
 def ch_result():
-    global pole
+    global pole, pas, data, lg, pas, lt_ri, er, wr, ri, lt_wr, masss, cur_ch
     time_delta = clock.tick(60) / 1000.0
+    masss = []
+    for i in range(len(cur_ch['err'])):
+        masss.append('GAME ' + str(i + 1))
+        masss += cur_ch['err'][i]
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
@@ -1239,9 +1254,36 @@ def ch_result():
                 if event.ui_element == back_ch:
                     pole = 8
         manager12.process_events(event)
+    try:
+        num2 = pygame_gui.elements.ui_drop_down_menu.UIDropDownMenu(relative_rect=pygame.Rect((0, 180), (400, 30)),
+                                                                    options_list=masss, starting_option=masss[1],
+                                                                    manager=manager12)
+    except:
+        num2 = pygame_gui.elements.ui_drop_down_menu.UIDropDownMenu(relative_rect=pygame.Rect((0, 180), (400, 30)),
+                                                                    options_list=['Нет предыдущих результатов'],
+                                                                    starting_option='Нет предыдущих результатов',
+                                                                    manager=manager12)
+
     sc.blit(teacher_window, (0, 0))
+    labble1 = myfont.render('Кол-во неправильных ответов за все время: ', False, Blue)
+    labble = myfont.render('Кол-во правильных ответов за все время:', False, Blue)
+    labble2 = myfont.render('Кол-во неправильных ответов в прошлой игре:', False, Blue)
+    labble3 = myfont.render('Кол-во правильных ответов в прошлой игре:', False, Blue)
+    trru = myfont.render(str(cur_ch['latest_ri']), False, Blue)
+    fall = myfont.render(str(cur_ch['latest_wr']), False, Blue)
+    trru1 = myfont.render(str(cur_ch['right']), False, Blue)
+    fall1 = myfont.render(str(cur_ch['wrong']), False, Blue)
     manager12.update(time_delta)
+    sc.blit(last_results, (0, 0))
     manager12.draw_ui(sc)
+    sc.blit(labble1, (0, 40))
+    sc.blit(labble, (0, 0))
+    sc.blit(trru, (780, 0))
+    sc.blit(fall, (820, 40))
+    sc.blit(labble2, (0, 80))
+    sc.blit(labble3, (0, 120))
+    sc.blit(trru1, (840, 120))
+    sc.blit(fall1, (880, 80))
     pygame.display.update()
 
 
