@@ -21,6 +21,8 @@ first = pygame.Surface((W, H))
 account = pygame.Surface((W, H))
 last_results = pygame.Surface((W, H))
 teacher_window = pygame.Surface((W, H))
+reg_teacher = pygame.Surface((W, H))
+log_teacher = pygame.Surface((W, H))
 
 background.fill(pygame.Color('#2496c1'))
 background1 = pygame.image.load('font.png')
@@ -31,6 +33,8 @@ result.fill(pygame.Color('#30d5c8'))
 account.fill(pygame.Color('#30d5c8'))
 last_results.fill(pygame.Color('#30d5c8'))
 teacher_window.fill(pygame.Color('#30d5c3'))
+reg_teacher.fill(pygame.Color('#30d5c3'))
+log_teacher.fill(pygame.Color('#30d5c3'))
 
 manager = pygame_gui.UIManager((W, H))
 manager1 = pygame_gui.UIManager((W, H))
@@ -42,6 +46,8 @@ manager6 = pygame_gui.UIManager((W, H))
 manager7 = pygame_gui.UIManager((W, H))
 manager8 = pygame_gui.UIManager((W, H))
 manager9 = pygame_gui.UIManager((W, H))
+manager10 = pygame_gui.UIManager((W, H))
+manager11 = pygame_gui.UIManager((W, H))
 
 accept_btn = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((852, 653), (150, 50)),
                                           text='Принять',
@@ -203,6 +209,63 @@ ll_r = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((600, 350), (200, 
                                     text='Предыдущие результаты',
                                     manager=manager1)
 
+###############################Вход препа##########################################################
+tch_back = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((770, 652), (250, 50)),
+                                        text='Назад',
+                                        manager=manager10)
+
+tch1 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((368, 280), (250, 50)),
+                                    text='Войти в аккаунт',
+                                    manager=manager10)
+
+llogin2 = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 100), (400, 50)),
+                                      text='Ваш логин: ', manager=manager10)
+
+ppasword2 = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 200), (400, 50)),
+                                        text='Ваш пароль: ', manager=manager10)
+
+login3 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((343, 150), (300, 50)), manager=manager10)
+
+password3 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((343, 250), (300, 50)), manager=manager10)
+
+ppasword6 = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 0), (400, 50)),
+                                        text='ВХОД ДЛЯ УЧИТЕЛЯ', manager=manager10)
+
+########################################################################
+##########################Регистрация препа#############################
+tch2 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((393, 380), (200, 50)),
+                                    text='Зарегистрироваться',
+                                    manager=manager11)
+
+tch_back1 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((770, 652), (250, 50)),
+                                         text='Назад',
+                                         manager=manager11)
+
+login6 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((343, 150), (300, 50)),
+                                             manager=manager11)
+
+password6 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((343, 250), (300, 50)),
+                                                manager=manager11)
+
+llogin6 = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 100), (400, 50)),
+                                      text='Логин: ', manager=manager11)
+
+ppasword6 = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 200), (400, 50)),
+                                        text='Пароль: ', manager=manager11)
+
+u = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 300), (400, 50)),
+                                text='Подтвердите пароль: ', manager=manager11)
+
+q = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 0), (400, 50)),
+                                text='РЕГИСТРАЦИЯ УЧИТЕЛЯ', manager=manager11)
+
+password7 = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((343, 350), (300, 50)),
+                                                manager=manager11)
+
+##############################################################################################
+##############################Вывод результатов для препа#####################################
+
+
 speed = 20
 
 White = (225, 225, 225)
@@ -283,14 +346,18 @@ class Button():
         sc.blit(self.text, self.text_rect)
 
     def checkForInput(self, position):
-        global pole, lt_ri, lt_wr, ri, wr, er, data, currentaccount
+        global pole, lt_ri, lt_wr, ri, wr, er, data, currentaccount, fg, n
         if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top,
                                                                                           self.rect.bottom):
+            fg = len(n)
             f = open('data.txt', 'rb')
             data = pickle.load(f)
             f.close()
 
             data.remove(currentaccount)
+
+            for i in range(fg):
+                n[i] = n[i] + ' = ' + str(nn[i])
 
             lg = currentaccount['login']
             pas = currentaccount['password']
@@ -304,6 +371,8 @@ class Button():
             lt_wr += no
             ri = scores
             wr = no
+            if len(er) >= 5:
+                del er[0]
             er.append(n)
 
             currentaccount['latest_ri'] = lt_ri
@@ -342,11 +411,23 @@ class BButton():
         sc.blit(self.text, self.text_rect)
 
     def checkForInput(self, position):
-        global pole, currentaccount
+        global pole, currentaccount, x1, x2, x3, x4, x5, x6, x, n, nn, no, scores
         if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top,
                                                                                           self.rect.bottom):
             pole = 5
+            x1 = 800
+            x2 = 800
+            x3 = 800
+            x4 = 800
+            x5 = 800
+            x6 = 800
+            x = 0
+            n.clear()
+            nn.clear()
+            no = 0
+            scores = 0
             currentaccount = None
+            randomex()
 
     def changeColor(self, position):
         if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top,
@@ -367,7 +448,7 @@ button_exit = BButton(button_surface1, 900, 676, 'exit')
 
 
 def start_pole():
-    global pole, flag, currentaccount
+    global pole, flag, currentaccount, n
     time_delta = clock.tick(60) / 1000.0
     miss = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 100), (400, 50)),
                                        text='Добро пожаловать, ' + str(currentaccount['login']) + '!',
@@ -379,6 +460,7 @@ def start_pole():
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == start_btn:
                     pole = 2
+                    print(n)
                     flag = 1
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKSPACE and pygame.key.get_mods() & pygame.KMOD_LCTRL:
@@ -404,16 +486,15 @@ def start_pole():
 def ress():
     global pole, n, nn
     time_delta = clock.tick(60) / 1000.0
-    fg = len(n)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == yes_btn:
+                    print(n)
                     pole = 4
-                    for i in range(fg):
-                        n[i] = n[i] + ' = ' + str(nn[i])
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == no_btn:
@@ -685,40 +766,40 @@ def Draw_pole():
 
     if y == 85 and x == x1 - g and fflag != True:
         x1 -= 10
-        kjk = True
-        miss()
         n.append(example)
         nn.append(solved)
+        print(n)
+        miss()
     if y == 185 and x == x2 - g and fflag != True:
-        kjk = True
         x2 -= 10
         n.append(example)
         nn.append(solved)
+        print(n)
         miss()
 
     if y == 285 and x == x3 - g and fflag != True:
-        kjk = True
         x3 -= 10
         n.append(example)
         nn.append(solved)
+        print(n)
         miss()
     if y == 385 and x == x4 - g and fflag != True:
-        kjk = True
         x4 -= 10
         n.append(example)
         nn.append(solved)
+        print(n)
         miss()
     if y == 485 and x == x5 - g and fflag != True:
-        kjk = True
         x5 -= 10
         n.append(example)
         nn.append(solved)
+        print(n)
         miss()
     if y == 585 and x == x6 - g and fflag != True:
-        kjk = True
         x6 -= 10
         n.append(example)
         nn.append(solved)
+        print(n)
         miss()
 
     pygame.draw.lines(sc, White, False, [(x1, 50), (x1, 150)], 5)
@@ -790,13 +871,6 @@ def Draw_pole():
     if x < x6 - 50 - g and y == 585:
         if keys[pygame.K_SPACE]:
             x += speed
-
-    if kjk == True:
-        if n[0] != '':
-            jn = True
-        if jn == True:
-            n.pop(0)
-            kjk = False
 
     sc.blit(textsurface, (x, y))
     sc.blit(textsurface2, (900 - f / 2, yu[2]))
@@ -874,6 +948,74 @@ def load_data():
     ri = data['right']
 
 
+def tch():
+    global pole
+    time_delta = clock.tick(60) / 1000.0
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            exit()
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == tch_back:
+                    pole = 5
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == tch1:
+                    login = login3.get_text()
+                    password = password3.get_text()
+                    f = open('tch.txt', 'rb')
+                    data_tch = pickle.load(f)
+                    f.close()
+                    if login == data_tch['login']:
+                        if password == data_tch['password']:
+                            pole = 8
+
+        manager10.process_events(event)
+    manager10.update(time_delta)
+    sc.blit(account, (0, 0))
+    manager10.draw_ui(sc)
+    pygame.display.update()
+
+
+def tch_log():
+    global pole
+    time_delta = clock.tick(60) / 1000.0
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            exit()
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == tch_back1:
+                    pole = 5
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == tch2:
+                    login = login6.get_text()
+                    password = password6.get_text()
+                    password2 = password7.get_text()
+                    if login.rstrip() != '' and password.rstrip() != '':
+                        if password == password2:
+                            data_tch = {'login': login, 'password': password}
+                            f = open('tch.txt', 'wb')
+                            pickle.dump(data_tch, f)
+                            f.close()
+                            pole = 8
+                            break
+                        else:
+                            miss = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 55), (400, 40)),
+                                                               text='Пароли не совпадают', manager=manager11)
+                    else:
+                        miss = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((300, 55), (400, 40)),
+                                                           text='Заполните все поля', manager=manager11)
+
+        manager11.process_events(event)
+    manager11.update(time_delta)
+    sc.blit(account, (0, 0))
+    manager11.draw_ui(sc)
+    pygame.display.update()
+
+
 def window1():
     global pole, flag, login, f, registr, currentaccount
     time_delta = clock.tick(60) / 1000.0
@@ -884,6 +1026,16 @@ def window1():
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == i_got_acc:
                     pole = 6
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE and pygame.key.get_mods() & pygame.KMOD_LCTRL:
+                if os.path.isfile('tch.txt'):
+                    pole = 9
+                else:
+                    pole = 10
+        if event.type == pygame.USEREVENT:
+            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.ui_element == leave:
+                    exit()
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == rreg:
@@ -995,6 +1147,11 @@ def accoun():
 def l_r():
     global pole, flag, registr, currentaccount, lg, pas, data, lg, pas, lt_ri, er, wr, ri, lt_wr
     time_delta = clock.tick(60) / 1000.0
+    mass = []
+    for i in range(len(currentaccount['err'])):
+        mass.append('GAME ' + str(i + 1))
+        mass += currentaccount['err'][i]
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
@@ -1006,16 +1163,35 @@ def l_r():
             if event.key == pygame.K_BACKSPACE and pygame.key.get_mods() & pygame.KMOD_LCTRL:
                 pole = 8
         manager8.process_events(event)
-    labble1 = myfont.render('Кол-во неправильных ответов: ', False, Blue)
-    labble = myfont.render('Кол-во правильных ответов:', False, Blue)
-    trru = myfont.render(str(currentaccount['latest_wr']), False, Blue)
-    ffalse = myfont.render(str(no), False, Blue)
+
+    try:
+        num2 = pygame_gui.elements.ui_drop_down_menu.UIDropDownMenu(relative_rect=pygame.Rect((0, 180), (400, 30)),
+                                                                    options_list=mass, starting_option=mass[1],
+                                                                    manager=manager8)
+    except:
+        num2 = pygame_gui.elements.ui_drop_down_menu.UIDropDownMenu(relative_rect=pygame.Rect((0, 180), (400, 30)),
+                                                                    options_list=['Нет предыдущих результатов'],
+                                                                    starting_option='Нет предыдущих результатов',
+                                                                    manager=manager8)
+    labble1 = myfont.render('Кол-во неправильных ответов за все время: ', False, Blue)
+    labble = myfont.render('Кол-во правильных ответов за все время:', False, Blue)
+    labble2 = myfont.render('Кол-во неправильных ответов в прошлой игре:', False, Blue)
+    labble3 = myfont.render('Кол-во правильных ответов в прошлой игре:', False, Blue)
+    trru = myfont.render(str(currentaccount['latest_ri']), False, Blue)
+    fall = myfont.render(str(currentaccount['latest_wr']), False, Blue)
+    trru1 = myfont.render(str(currentaccount['right']), False, Blue)
+    fall1 = myfont.render(str(currentaccount['wrong']), False, Blue)
     manager8.update(time_delta)
     sc.blit(last_results, (0, 0))
     manager8.draw_ui(sc)
     sc.blit(labble1, (0, 40))
     sc.blit(labble, (0, 0))
-    sc.blit(trru, (10, 0))
+    sc.blit(trru, (780, 0))
+    sc.blit(fall, (820, 40))
+    sc.blit(labble2, (0, 80))
+    sc.blit(labble3, (0, 120))
+    sc.blit(trru1, (840, 120))
+    sc.blit(fall1, (880, 80))
     pygame.display.update()
 
 
@@ -1028,7 +1204,7 @@ def teacher_w():
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == bbback:
-                    pole = 7
+                    pole = 5
         manager9.process_events(event)
     sc.blit(teacher_window, (0, 0))
     manager9.update(time_delta)
@@ -1062,6 +1238,10 @@ while 1:
         l_r()
     elif pole == 8:
         teacher_w()
+    elif pole == 9:
+        tch()
+    elif pole == 10:
+        tch_log()
 
     clock.tick(FPS)
 
